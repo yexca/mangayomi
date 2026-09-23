@@ -1,0 +1,7 @@
+[
+  {
+    "path": "web/package-lock.json",
+    "rule": "email",
+    "reason": "Generated lockfile; contains public npm registry metadata of third-party packages."
+  }
+]

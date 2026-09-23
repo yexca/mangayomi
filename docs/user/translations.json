@@ -1,0 +1,12 @@
+{
+  "sourceLocale": "en",
+  "locales": ["en", "zh-Hans", "zh-Hant", "ja", "ko"],
+  "documents": [
+    { "source": "index.md" },
+    { "source": "getting-started.md" },
+    { "source": "libraries.md" },
+    { "source": "reader.md" },
+    { "source": "managing.md" },
+    { "source": "settings.md" }
+  ]
+}

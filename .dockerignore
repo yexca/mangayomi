@@ -1,0 +1,14 @@
+.git
+.github
+.claude
+.smoke
+config
+data
+docs
+scripts
+web/node_modules
+web/dist
+**/*.db
+**/*.db-*
+.env
+.env.*

@@ -1,0 +1,27 @@
+# Runtime mounts: may contain private media, databases, and session state.
+config/*
+!config/.gitkeep
+data/*
+!data/.gitkeep
+
+# Backend build and test output
+/bin/
+/mangayomi
+/mangayomi.exe
+*.db
+*.db-*
+coverage*.out
+
+# Frontend
+web/node_modules/
+web/dist/
+web/.vite/
+web/*.tsbuildinfo
+web/node_modules/.tmp/
+
+# Local environment and tooling
+.env
+.env.*
+!.env.example
+/.smoke/
+/.claude/
