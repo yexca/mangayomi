@@ -13,7 +13,6 @@ import { api, ApiError, onUnauthorized } from "@/lib/api"
 import { AuthorDetailPage, AuthorsListPage } from "@/pages/authors"
 import { BrowsePage } from "@/pages/browse"
 import { HomePage } from "@/pages/home"
-import { LibraryFormPage } from "@/pages/library-form"
 import { LoginPage } from "@/pages/login"
 import { ReaderPage } from "@/pages/reader"
 import { SeriesDetailPage, SeriesListPage } from "@/pages/series"
@@ -60,8 +59,6 @@ function AuthGate() {
         <Route path="authors/view" element={<AuthorDetailPage />} />
         <Route path="works/:id" element={<WorkPage />} />
         <Route path="settings" element={<SettingsPage />} />
-        <Route path="settings/libraries/new" element={<LibraryFormPage />} />
-        <Route path="settings/libraries/:id" element={<LibraryFormPage key="edit" />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

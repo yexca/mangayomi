@@ -12,9 +12,9 @@ import {
 import { useTheme } from "next-themes"
 import { useState, type FormEvent, type ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { Link } from "react-router"
 import { toast } from "sonner"
 
+import { LibraryDialog } from "@/components/library-dialog"
 import { PageHeader } from "@/components/page-header"
 import {
   AlertDialog,
@@ -94,6 +94,8 @@ function LibrariesSection() {
   const libs = useQuery({ queryKey: ["libraries"], queryFn: api.libraries })
   const scans = useScanStatus()
   const [removing, setRemoving] = useState<Library | null>(null)
+  // undefined: closed, null: adding, Library: editing.
+  const [editing, setEditing] = useState<Library | null | undefined>(undefined)
 
   const scan = useMutation({
     mutationFn: (id?: number) => (id ? api.scanLibrary(id) : api.scanAll()),
@@ -122,11 +124,9 @@ function LibrariesSection() {
               {t("settings.scanAll")}
             </Button>
           )}
-          <Button asChild>
-            <Link to="/settings/libraries/new">
-              <PlusIcon />
-              {t("settings.addLibrary")}
-            </Link>
+          <Button onClick={() => setEditing(null)}>
+            <PlusIcon />
+            {t("settings.addLibrary")}
           </Button>
         </>
       }
@@ -181,11 +181,9 @@ function LibrariesSection() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem asChild>
-                    <Link to={`/settings/libraries/${lib.id}`}>
-                      <PencilIcon />
-                      {t("common.edit")}
-                    </Link>
+                  <DropdownMenuItem onSelect={() => setEditing(lib)}>
+                    <PencilIcon />
+                    {t("common.edit")}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem variant="destructive" onSelect={() => setRemoving(lib)}>
@@ -198,6 +196,12 @@ function LibrariesSection() {
           )
         })}
       </div>
+
+      <LibraryDialog
+        open={editing !== undefined}
+        onOpenChange={(o) => !o && setEditing(undefined)}
+        library={editing ?? undefined}
+      />
 
       <AlertDialog open={removing !== null} onOpenChange={(o) => !o && setRemoving(null)}>
         <AlertDialogContent>

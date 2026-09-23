@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query"
 import { ChevronRightIcon, FolderPlusIcon, LibraryIcon } from "lucide-react"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router"
 
+import { LibraryDialog } from "@/components/library-dialog"
 import { LibrarySelect, useActiveLibrary } from "@/components/library-select"
 import { EmptyState, PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
@@ -15,6 +17,7 @@ export function HomePage() {
   const library = useActiveLibrary()
   const libs = useQuery({ queryKey: ["libraries"], queryFn: api.libraries })
   const home = useQuery({ queryKey: ["home", library], queryFn: () => api.home(library) })
+  const [adding, setAdding] = useState(false)
 
   if (libs.data && libs.data.libraries.length === 0) {
     return (
@@ -24,12 +27,9 @@ export function HomePage() {
           icon={<FolderPlusIcon />}
           title={t("home.emptyTitle")}
           description={t("home.emptyDescription")}
-          action={
-            <Button asChild>
-              <Link to="/settings/libraries/new">{t("home.addLibrary")}</Link>
-            </Button>
-          }
+          action={<Button onClick={() => setAdding(true)}>{t("home.addLibrary")}</Button>}
         />
+        <LibraryDialog open={adding} onOpenChange={setAdding} />
       </>
     )
   }

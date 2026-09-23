@@ -10,8 +10,8 @@ react-i18next, and `vite-plugin-pwa`. The production build is written to
 | Path | Contents |
 | --- | --- |
 | `src/App.tsx` | Providers, the auth gate, and routes. |
-| `src/pages/` | One file per screen: home, browse, series, authors, work, reader, settings, library form, login. |
-| `src/components/` | App components (cards, grids, dialogs, app shell). |
+| `src/pages/` | One file per screen: home, browse, series, authors, work, reader, settings, login. |
+| `src/components/` | App components (cards, grids, dialogs such as the library form, app shell). |
 | `src/components/ui/` | Generated shadcn/ui primitives. |
 | `src/hooks/` | Selection, reader preferences, scan status polling, library filter. |
 | `src/lib/` | API client and types, formatting, links, spreads, storage helpers. |
@@ -27,7 +27,7 @@ react-i18next, and `vite-plugin-pwa`. The production build is written to
 | `/authors`, `/authors/view?author=` | Author list and detail |
 | `/works/:id` | Work detail |
 | `/read/:id?page=` | Reader (full screen, outside the app shell) |
-| `/settings`, `/settings/libraries/new`, `/settings/libraries/:id` | Settings and library form |
+| `/settings` | Settings; libraries are added and edited in a dialog |
 
 Series and author names travel in query strings because they may contain `/`.
 
