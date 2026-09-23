@@ -1,11 +1,12 @@
 services:
   mangayomi:
-    build: .
-    image: ${MANGAYOMI_IMAGE:-mangayomi:latest}
+    # Published image. Pin a release tag or digest in .env for reproducible
+    # deployments. To build from source instead, use docker-compose.dev.yml.
+    image: ${MANGAYOMI_IMAGE:-yexca/mangayomi:latest}
     container_name: mangayomi
     restart: unless-stopped
     ports:
-      - "${MANGAYOMI_PORT:-8080}:8080"
+      - "${MANGAYOMI_PORT:-7652}:7652"
     environment:
       # User/group that owns your manga files on the NAS (run `id` to find them).
       PUID: ${PUID:-1000}

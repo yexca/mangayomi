@@ -40,7 +40,7 @@ Mangayomi は、NAS にすでに保存しているコミックのアーカイブ
 
 ### 1. デプロイ用ディレクトリを準備する
 
-[`docker-compose.yml`](../../docker-compose.yml) とこのリポジトリの残りのファイルを Docker ホストに配置します（イメージはローカルでビルドされます）。ポート、イメージ、ファイルを所有するユーザーを変更する場合は、必要に応じて [`.env.example`](../../.env.example) を `.env` にコピーしてください。
+[`docker-compose.yml`](../../docker-compose.yml) を Docker ホスト上のディレクトリにコピーします。公開済みの `yexca/mangayomi` イメージを使うため、リポジトリの他のファイルは不要です。ポート、イメージのタグ、ファイルを所有するユーザーを変更する場合は、必要に応じて [`.env.example`](../../.env.example) を `.env` にコピーしてください。
 
 ### 2. `/data` を漫画の保存先に向ける
 
@@ -49,10 +49,10 @@ Mangayomi は、NAS にすでに保存しているコミックのアーカイブ
 ### 3. Mangayomi を起動する
 
 ```sh
-docker compose up -d --build
+docker compose up -d
 ```
 
-<http://127.0.0.1:8080> を開いてパスワードを作成し、**Settings → Libraries**（設定 → ライブラリ）からライブラリを追加します。詳しい手順は[はじめに](../user/ja/getting-started.md)を参照してください。
+<http://127.0.0.1:7652> を開いてパスワードを作成し、**Settings → Libraries**（設定 → ライブラリ）からライブラリを追加します。詳しい手順は[はじめに](../user/ja/getting-started.md)を参照してください。
 
 ## ランタイムデータ
 

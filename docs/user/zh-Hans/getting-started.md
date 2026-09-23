@@ -11,7 +11,7 @@
 
 ## 使用 Docker 运行
 
-1. 将本仓库放到 Docker 主机上。
+1. 将本仓库中的 `docker-compose.yml` 复制到 Docker 主机上的某个目录。它会拉取已发布的 `yexca/mangayomi` 镜像。
 2. 修改 `docker-compose.yml` 中的数据卷，使其指向你的漫画目录：
 
    ```yaml
@@ -24,10 +24,10 @@
 4. 启动服务：
 
    ```sh
-   docker compose up -d --build
+   docker compose up -d
    ```
 
-5. 访问 `http://<server-address>:8080`。
+5. 访问 `http://<server-address>:7652`。
 
 ## 首次登录
 

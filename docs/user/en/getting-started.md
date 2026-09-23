@@ -11,7 +11,8 @@
 
 ## Run With Docker
 
-1. Put this repository on the Docker host.
+1. Copy `docker-compose.yml` from this repository to a directory on the Docker
+   host. It pulls the published `yexca/mangayomi` image.
 2. Edit the data volume in `docker-compose.yml` so it points at your manga:
 
    ```yaml
@@ -25,10 +26,10 @@
 4. Start it:
 
    ```sh
-   docker compose up -d --build
+   docker compose up -d
    ```
 
-5. Open `http://<server-address>:8080`.
+5. Open `http://<server-address>:7652`.
 
 ## First Sign-In
 

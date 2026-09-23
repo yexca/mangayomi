@@ -7,7 +7,7 @@ the container paths and Compose passes the rest from `.env`.
 
 | Variable | Default (binary) | Default (image) | Purpose |
 | --- | --- | --- | --- |
-| `MANGAYOMI_ADDR` | `:8080`, or `:$PORT` when `PORT` is set | `:8080` | Listen address |
+| `MANGAYOMI_ADDR` | `:7652`, or `:$PORT` when `PORT` is set | `:7652` | Listen address |
 | `MANGAYOMI_CONFIG_DIR` | `./config` | `/config` | Database and cover cache |
 | `MANGAYOMI_DATA_DIR` | `./data` | `/data` | Root that libraries, folder browsing, and deletion are confined to |
 | `MANGAYOMI_WEB_DIR` | `./web/dist` | `/app/web` | Built frontend; when missing, only the API is served |
@@ -27,8 +27,8 @@ Set these in `.env` beside `docker-compose.yml`; see
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `MANGAYOMI_IMAGE` | `mangayomi:latest` | Image tag to build or run |
-| `MANGAYOMI_PORT` | `8080` | Host port |
+| `MANGAYOMI_IMAGE` | `yexca/mangayomi:latest` | Image to run with `docker-compose.yml` |
+| `MANGAYOMI_PORT` | `7652` | Host port |
 | `PUID`, `PGID`, `TZ`, `MANGAYOMI_DEBUG` | as above | Passed to the container |
 
 Compose reads `.env` automatically and shell variables take precedence. Run

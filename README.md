@@ -58,10 +58,11 @@ server and a React frontend, packaged as one Docker image backed by SQLite.
 
 ### 1. Prepare the deployment directory
 
-Place [`docker-compose.yml`](docker-compose.yml) and the rest of this
-repository on the Docker host (the image is built locally). Optionally copy
-[`.env.example`](.env.example) to `.env` to change the port, the image, or the
-user that owns your files.
+Copy [`docker-compose.yml`](docker-compose.yml) to a directory on the Docker
+host. It runs the published `yexca/mangayomi` image, so the rest of the
+repository is not needed. Optionally copy [`.env.example`](.env.example) to
+`.env` beside it to change the port, the image tag, or the user that owns your
+files.
 
 ### 2. Point `/data` at your manga
 
@@ -72,10 +73,10 @@ to the owner of those files (run `id` on the NAS).
 ### 3. Start Mangayomi
 
 ```sh
-docker compose up -d --build
+docker compose up -d
 ```
 
-Open <http://127.0.0.1:8080>, create a password, then add a library under
+Open <http://127.0.0.1:7652>, create a password, then add a library under
 **Settings → Libraries**. See [Getting started](docs/user/en/getting-started.md)
 for a walkthrough.
 

@@ -58,9 +58,9 @@ SQLite를 사용하는 하나의 Docker 이미지로 패키징됩니다.
 
 ### 1. 배포 디렉터리 준비하기
 
-[`docker-compose.yml`](../../docker-compose.yml)과 이 저장소의 나머지 파일을
-Docker 호스트에 둡니다(이미지는 로컬에서 빌드됩니다). 포트, 이미지, 파일 소유
-사용자를 변경하려면 필요에 따라 [`.env.example`](../../.env.example)을 `.env`로
+[`docker-compose.yml`](../../docker-compose.yml)을 Docker 호스트의 디렉터리에
+복사합니다. 게시된 `yexca/mangayomi` 이미지를 사용하므로 저장소의 나머지 파일은
+필요하지 않습니다. 포트, 이미지 태그, 파일 소유 사용자를 변경하려면 필요에 따라 [`.env.example`](../../.env.example)을 `.env`로
 복사합니다.
 
 ### 2. `/data`가 만화를 가리키도록 설정하기
@@ -72,10 +72,10 @@ Docker 호스트에 둡니다(이미지는 로컬에서 빌드됩니다). 포트
 ### 3. Mangayomi 시작하기
 
 ```sh
-docker compose up -d --build
+docker compose up -d
 ```
 
-<http://127.0.0.1:8080>을 열고 비밀번호를 만든 다음
+<http://127.0.0.1:7652>을 열고 비밀번호를 만든 다음
 **Settings → Libraries**에서 라이브러리를 추가합니다. 자세한 안내는
 [시작하기](../user/ko/getting-started.md)를 참고하십시오.
 

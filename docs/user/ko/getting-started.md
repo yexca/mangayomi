@@ -11,7 +11,8 @@
 
 ## Docker로 실행하기
 
-1. 이 저장소를 Docker 호스트에 둡니다.
+1. 이 저장소의 `docker-compose.yml`을 Docker 호스트의 디렉터리에 복사합니다.
+   게시된 `yexca/mangayomi` 이미지를 가져옵니다.
 2. `docker-compose.yml`의 데이터 볼륨이 만화가 있는 위치를 가리키도록
    수정합니다.
 
@@ -26,10 +27,10 @@
 4. 실행합니다.
 
    ```sh
-   docker compose up -d --build
+   docker compose up -d
    ```
 
-5. `http://<server-address>:8080`을 엽니다.
+5. `http://<server-address>:7652`을 엽니다.
 
 ## 첫 로그인
 

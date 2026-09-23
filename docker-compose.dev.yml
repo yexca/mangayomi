@@ -1,0 +1,23 @@
+# Development compose file: builds the image from this checkout.
+# Use it through `make docker-up` or `docker compose -f docker-compose.dev.yml ...`.
+# Deployments use docker-compose.yml, which pulls the published image.
+services:
+  mangayomi:
+    build: .
+    image: mangayomi:dev
+    container_name: mangayomi
+    restart: unless-stopped
+    ports:
+      - "${MANGAYOMI_PORT:-7652}:7652"
+    environment:
+      # User/group that owns your manga files on the NAS (run `id` to find them).
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      TZ: ${TZ:-UTC}
+      MANGAYOMI_DEBUG: ${MANGAYOMI_DEBUG:-}
+    volumes:
+      # Database and cover cache.
+      - ./config:/config
+      # Your manga. Point this at the NAS share, e.g. /path/to/manga:/data.
+      # Must be writable for the delete feature to work.
+      - ./data:/data

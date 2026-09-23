@@ -10,7 +10,7 @@
 
 ## Docker で実行する
 
-1. このリポジトリを Docker ホストに配置します。
+1. このリポジトリの `docker-compose.yml` を Docker ホスト上のディレクトリにコピーします。公開済みの `yexca/mangayomi` イメージが取得されます。
 2. `docker-compose.yml` のデータボリュームを編集し、漫画の保存先を指すようにします。
 
    ```yaml
@@ -23,10 +23,10 @@
 4. 起動します。
 
    ```sh
-   docker compose up -d --build
+   docker compose up -d
    ```
 
-5. `http://<server-address>:8080` を開きます。
+5. `http://<server-address>:7652` を開きます。
 
 ## 初回サインイン
 

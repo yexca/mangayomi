@@ -15,7 +15,7 @@ type Config struct {
 
 func Load() Config {
 	return Config{
-		Addr:      env("MANGAYOMI_ADDR", ":"+env("PORT", "8080")),
+		Addr:      env("MANGAYOMI_ADDR", ":"+env("PORT", "7652")),
 		ConfigDir: abs(env("MANGAYOMI_CONFIG_DIR", "config")),
 		DataDir:   abs(env("MANGAYOMI_DATA_DIR", "data")),
 		WebDir:    abs(env("MANGAYOMI_WEB_DIR", filepath.Join("web", "dist"))),

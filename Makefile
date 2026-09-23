@@ -9,6 +9,7 @@ NPM ?= npm
 NODE ?= node
 DOCKER ?= docker
 DOCKER_IMAGE ?= mangayomi:dev
+DOCKER_COMPOSE_DEV ?= $(DOCKER) compose -f docker-compose.dev.yml
 DOCKER_BUILD_ARGS ?=
 GOVULNCHECK_VERSION ?= v1.7.0
 GO_DIRS := cmd internal scripts
@@ -97,16 +98,16 @@ docker-build:
 	$(DOCKER) build $(DOCKER_BUILD_ARGS) --build-arg VERSION=$(APP_VERSION) -t $(DOCKER_IMAGE) .
 
 docker-up:
-	$(DOCKER) compose up -d --build
+	$(DOCKER_COMPOSE_DEV) up -d --build
 
 docker-down:
-	$(DOCKER) compose down
+	$(DOCKER_COMPOSE_DEV) down
 
 docker-status:
-	$(DOCKER) compose ps
+	$(DOCKER_COMPOSE_DEV) ps
 
 docker-logs:
-	$(DOCKER) compose logs --no-color --tail 200 mangayomi
+	$(DOCKER_COMPOSE_DEV) logs --no-color --tail 200 mangayomi
 
 smoke: docker-build
 	$(NODE) scripts/smoke.mjs $(DOCKER_IMAGE)

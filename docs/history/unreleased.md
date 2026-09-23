@@ -25,5 +25,9 @@ Initial version, planned as v0.1.0.
 
 ## Operations
 
-- Single Docker image with `PUID`/`PGID` support, health check, and a
-  `reset-password` command.
+- Single Docker image listening on port 7652 with `PUID`/`PGID` support, a
+  health check, and a `reset-password` command.
+- `docker-compose.yml` runs the published `yexca/mangayomi:latest` image;
+  `docker-compose.dev.yml` builds from source for development.
+- Release images for `linux/amd64` and `linux/arm64` on Docker Hub and GHCR
+  (`yexca/mangayomi`), published by a tag-triggered release workflow.

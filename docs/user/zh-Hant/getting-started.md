@@ -10,7 +10,7 @@
 
 ## 使用 Docker 執行
 
-1. 將此儲存庫放到 Docker 主機上。
+1. 將此儲存庫中的 `docker-compose.yml` 複製到 Docker 主機上的某個目錄。它會拉取已發布的 `yexca/mangayomi` 映像檔。
 2. 編輯 `docker-compose.yml` 中的資料磁碟區，讓它指向你的漫畫：
 
    ```yaml
@@ -23,10 +23,10 @@
 4. 啟動：
 
    ```sh
-   docker compose up -d --build
+   docker compose up -d
    ```
 
-5. 開啟 `http://<server-address>:8080`。
+5. 開啟 `http://<server-address>:7652`。
 
 ## 首次登入
 

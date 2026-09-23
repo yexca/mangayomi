@@ -40,7 +40,7 @@ Mangayomi 会为你已存放在 NAS 上的漫画压缩包和图片文件夹建�
 
 ### 1. 准备部署目录
 
-将 [`docker-compose.yml`](../../docker-compose.yml) 和本仓库的其余内容放到 Docker 主机上（镜像在本地构建）。可选：将 [`.env.example`](../../.env.example) 复制为 `.env`，以更改端口、镜像或文件所有者用户。
+将 [`docker-compose.yml`](../../docker-compose.yml) 复制到 Docker 主机上的某个目录。它使用已发布的 `yexca/mangayomi` 镜像，因此不需要本仓库的其余内容。可选：将 [`.env.example`](../../.env.example) 复制为同目录下的 `.env`，以更改端口、镜像标签或文件所有者用户。
 
 ### 2. 将 `/data` 指向你的漫画
 
@@ -49,10 +49,10 @@ Mangayomi 会为你已存放在 NAS 上的漫画压缩包和图片文件夹建�
 ### 3. 启动 Mangayomi
 
 ```sh
-docker compose up -d --build
+docker compose up -d
 ```
 
-打开 <http://127.0.0.1:8080>，创建密码，然后在 **Settings → Libraries** 中添加漫画库。完整步骤请参阅[快速上手](../user/zh-Hans/getting-started.md)。
+打开 <http://127.0.0.1:7652>，创建密码，然后在 **Settings → Libraries** 中添加漫画库。完整步骤请参阅[快速上手](../user/zh-Hans/getting-started.md)。
 
 ## 运行时数据
 

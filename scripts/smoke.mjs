@@ -55,7 +55,7 @@ async function main() {
   const gid = process.getgid?.() ?? 1000;
   docker(
     "run", "-d", "--name", name,
-    "-p", `127.0.0.1:${port}:8080`,
+    "-p", `127.0.0.1:${port}:7652`,
     "-e", `PUID=${uid}`, "-e", `PGID=${gid}`,
     "-v", `${configDir}:/config`, "-v", `${dataDir}:/data`,
     image,

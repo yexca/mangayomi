@@ -20,7 +20,7 @@ root, and a `_drafts` folder to try exclusions.
 make backend-run
 ```
 
-The server listens on `:8080` and uses `./config` and `./data` relative to the
+The server listens on `:7652` and uses `./config` and `./data` relative to the
 repository root. It also serves `web/dist` when it exists, so after
 `make frontend-build` the backend alone is a complete app. Set `PORT` or
 `MANGAYOMI_ADDR` to use another port.
@@ -33,7 +33,7 @@ npm ci
 npm run dev
 ```
 
-Vite serves on `:5173` and proxies `/api` to `http://localhost:8080`. Set
+Vite serves on `:5173` and proxies `/api` to `http://localhost:7652`. Set
 `MANGAYOMI_API` to proxy elsewhere, for example
 `MANGAYOMI_API=http://localhost:18080 npm run dev`. The session cookie is
 shared because both run on `localhost`.
@@ -51,7 +51,9 @@ npx shadcn@latest add <component>
 make docker-up
 ```
 
-Uses `docker-compose.yml` with the repository's `config/` and `data/`.
+Builds the image with `docker-compose.dev.yml` and mounts the repository's
+`config/` and `data/`. `docker-compose.yml` is the deployment file and pulls
+the published image instead.
 
 ## Common Checks
 

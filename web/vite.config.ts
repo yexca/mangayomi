@@ -64,7 +64,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': process.env.MANGAYOMI_API ?? 'http://localhost:8080',
+      '/api': process.env.MANGAYOMI_API ?? 'http://localhost:7652',
     },
   },
 })

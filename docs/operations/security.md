@@ -12,7 +12,7 @@ can delete files in every library.
   beyond a trusted LAN. The proxy should send `X-Forwarded-Proto: https` so
   cookies are marked `Secure`.
 - **Limit reachability.** Bind the port to a LAN address or loopback
-  (`127.0.0.1:8080:8080`), use a VPN, or add proxy authentication if the
+  (`127.0.0.1:7652:7652`), use a VPN, or add proxy authentication if the
   instance must be reachable from the internet.
 
 ## Authentication

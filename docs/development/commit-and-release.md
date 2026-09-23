@@ -45,7 +45,25 @@ it on startup.
 
 ## Releasing
 
-1. Update `VERSION` and the release notes.
+1. Update `VERSION` and move the release notes to `docs/history/<tag>.md`.
 2. Run `make ci-local`.
-3. Tag the commit with the exact `VERSION` value.
-4. Build and publish the image with `make DOCKER_IMAGE=<registry>/mangayomi:<tag> docker-build`.
+3. Tag the commit with the exact `VERSION` value and push the tag:
+
+   ```sh
+   git tag v0.1.0
+   git push origin v0.1.0
+   ```
+
+The tag starts `.github/workflows/release.yml`, which:
+
+1. Fails unless the tag equals `VERSION` and `docs/history/<tag>.md` exists.
+2. Runs the full CI workflow, including the Docker smoke test.
+3. Builds `linux/amd64` and `linux/arm64` images and pushes them to
+   `ghcr.io/yexca/mangayomi` and `docker.io/yexca/mangayomi`, tagged
+   `<version>`, `<major>.<minor>`, and `latest`. Pre-release tags such as
+   `v0.2.0-rc.1` get only the exact version tag.
+4. Creates the GitHub release with the notes file as its body.
+
+The Docker Hub login uses the `yexca` account and the `DOCKERHUB_TOKEN`
+Actions secret, a Docker Hub access token with read and write scope. GHCR uses
+the workflow's `GITHUB_TOKEN`.

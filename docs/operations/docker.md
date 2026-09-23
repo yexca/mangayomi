@@ -3,16 +3,39 @@
 The repository builds one image containing the Go server and the built web
 app. The final stage is Alpine with `su-exec` and `tzdata`.
 
-## Build And Run
+## Compose Files
+
+| File | Purpose |
+| --- | --- |
+| `docker-compose.yml` | Deployment. Pulls the published `yexca/mangayomi:latest` image from Docker Hub; override with `MANGAYOMI_IMAGE`. |
+| `docker-compose.dev.yml` | Development. Builds `mangayomi:dev` from the checkout. |
+
+## Run The Published Image
+
+Copy `docker-compose.yml` (and optionally `.env.example` as `.env`) to the
+Docker host, then:
 
 ```sh
-docker compose up -d --build
+docker compose up -d
+```
+
+Releases are published for `linux/amd64` and `linux/arm64` to Docker Hub
+(`yexca/mangayomi`) and GitHub Container Registry
+(`ghcr.io/yexca/mangayomi`). Each release is tagged with its version (for
+example `0.1.0`), its minor line (`0.1`), and `latest`. Set
+`MANGAYOMI_IMAGE` in `.env` to pin a version or use GHCR, for example
+`MANGAYOMI_IMAGE=ghcr.io/yexca/mangayomi:0.1`.
+
+## Build From Source
+
+```sh
+docker compose -f docker-compose.dev.yml up -d --build
 ```
 
 or, through the Makefile:
 
 ```sh
-make docker-up        # build and start with docker-compose.yml
+make docker-up        # build and start with docker-compose.dev.yml
 make docker-status
 make docker-logs
 make docker-down
@@ -49,7 +72,9 @@ seconds. `docker ps` shows `healthy` once the server answers.
 ## Upgrades
 
 1. Back up `config/`.
-2. Pull the new source and run `docker compose up -d --build`.
+2. Run `docker compose pull` and then `docker compose up -d`. When building
+   from source, pull the new source and run
+   `docker compose -f docker-compose.dev.yml up -d --build`.
 
 Database migrations run on startup.
 
