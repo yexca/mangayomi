@@ -34,6 +34,8 @@ func main() {
 			if err != nil {
 				return err
 			}
+			// Git stores LF; a core.autocrlf checkout must not read as unformatted.
+			src = bytes.ReplaceAll(src, []byte("\r\n"), []byte("\n"))
 			out, err := format.Source(src)
 			if err != nil {
 				return fmt.Errorf("%s: %w", p, err)

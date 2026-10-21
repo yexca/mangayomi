@@ -29,17 +29,31 @@ func setup(t *testing.T) (*Service, *store.Store, string, store.Library) {
 	return New(st, m, dataDir), st, root, lib
 }
 
+func mustMkdir(t *testing.T, dir string) {
+	t.Helper()
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func mustWrite(t *testing.T, path string, data []byte) {
+	t.Helper()
+	if err := os.WriteFile(path, data, 0o644); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func addWork(t *testing.T, st *store.Store, lib store.Library, rel, kind, author, series string, files ...string) int64 {
 	t.Helper()
 	abs := filepath.Join(lib.Path, filepath.FromSlash(rel))
 	if kind == store.KindFolder {
-		os.MkdirAll(abs, 0o755)
+		mustMkdir(t, abs)
 		for _, f := range files {
-			os.WriteFile(filepath.Join(abs, f), []byte("x"), 0o644)
+			mustWrite(t, filepath.Join(abs, f), []byte("x"))
 		}
 	} else {
-		os.MkdirAll(filepath.Dir(abs), 0o755)
-		os.WriteFile(abs, []byte("zip"), 0o644)
+		mustMkdir(t, filepath.Dir(abs))
+		mustWrite(t, abs, []byte("zip"))
 	}
 	id, err := st.InsertWork(context.Background(), store.WorkRecord{
 		LibraryID: lib.ID, RelPath: rel, Kind: kind, Title: filepath.Base(rel), Author: author, Series: series,
@@ -59,7 +73,7 @@ func TestDeleteSeries(t *testing.T) {
 	addWork(t, st, lib, "A/S1/v1.cbz", store.KindArchive, "A", "S1")
 	addWork(t, st, lib, "A/S1/v2", store.KindFolder, "A", "S1", "1.png", "2.png")
 	keep := addWork(t, st, lib, "A/S2/v1.cbz", store.KindArchive, "A", "S2")
-	os.WriteFile(filepath.Join(root, "A", "S1", ".DS_Store"), []byte{}, 0o644)
+	mustWrite(t, filepath.Join(root, "A", "S1", ".DS_Store"), []byte{})
 
 	plan, err := svc.Preview(ctx, Target{Series: []SeriesRef{{Author: "A", Series: "S1"}}})
 	if err != nil {
@@ -95,7 +109,7 @@ func TestDeleteSeries(t *testing.T) {
 
 func TestDeleteRefusesLibraryRoot(t *testing.T) {
 	svc, st, root, lib := setup(t)
-	os.MkdirAll(root, 0o755)
+	mustMkdir(t, root)
 	id, err := st.InsertWork(context.Background(), store.WorkRecord{
 		LibraryID: lib.ID, RelPath: "", Kind: store.KindFolder, Title: "root", Pages: []string{"1.png"},
 	})

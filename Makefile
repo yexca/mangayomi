@@ -1,5 +1,5 @@
-.PHONY: backend-format backend-vet backend-test backend-race backend-coverage backend-verify backend-vuln backend-build backend-run sample-data
-.PHONY: frontend-install frontend-dev frontend-build frontend-lint frontend-typecheck frontend-audit
+.PHONY: backend-format backend-lint backend-vet backend-test backend-race backend-coverage backend-verify backend-vuln backend-build backend-run sample-data
+.PHONY: frontend-install frontend-dev frontend-build frontend-lint frontend-typecheck frontend-audit frontend-audit-signatures dependency-audit
 .PHONY: docs docs-links docs-locales sensitive-check
 .PHONY: docker-build docker-up docker-down docker-status docker-logs smoke
 .PHONY: ci-style ci-backend ci-frontend ci-local ci
@@ -12,6 +12,8 @@ DOCKER_IMAGE ?= mangayomi:dev
 DOCKER_COMPOSE_DEV ?= $(DOCKER) compose -f docker-compose.dev.yml
 DOCKER_BUILD_ARGS ?=
 GOVULNCHECK_VERSION ?= v1.7.0
+GOLANGCI_LINT_VERSION ?= v2.13.1
+GOLANGCI_LINT_TIMEOUT ?= 5m
 GO_DIRS := cmd internal scripts
 
 ifeq ($(OS),Windows_NT)
@@ -28,6 +30,9 @@ GO_LDFLAGS := -X main.version=$(APP_VERSION)
 
 backend-format:
 	$(GO) run ./scripts/gofmtcheck $(GO_DIRS)
+
+backend-lint:
+	$(GO) run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION) run --config=scripts/golangci-lint.yml --timeout=$(GOLANGCI_LINT_TIMEOUT) --color=never ./...
 
 backend-vet:
 	$(GO) vet ./...
@@ -79,6 +84,12 @@ frontend-typecheck: frontend-install
 frontend-audit: frontend-install
 	cd web && $(NPM) audit --audit-level=moderate
 
+frontend-audit-signatures: frontend-install
+	cd web && $(NPM) audit signatures
+
+# The advisory checks alone, as the daily Dependency Audit workflow runs them.
+dependency-audit: backend-vuln frontend-audit frontend-audit-signatures
+
 # ---- docs and privacy ----
 
 docs: docs-links docs-locales
@@ -116,9 +127,9 @@ smoke: docker-build
 
 ci-style: backend-format frontend-lint frontend-typecheck docs
 
-ci-backend: backend-verify backend-vet backend-test backend-race backend-vuln
+ci-backend: backend-verify backend-lint backend-vet backend-test backend-race backend-vuln
 
-ci-frontend: frontend-audit frontend-build
+ci-frontend: frontend-audit frontend-audit-signatures frontend-build
 
 # Everything GitHub Actions runs, available locally.
 ci-local: ci-style ci-backend ci-frontend smoke

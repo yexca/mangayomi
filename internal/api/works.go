@@ -192,7 +192,7 @@ func (s *Server) workPage(w http.ResponseWriter, r *http.Request) {
 	h.Set("Content-Length", strconv.FormatInt(size, 10))
 	h.Set("Cache-Control", "private, max-age=604800")
 	h.Set("ETag", etag)
-	io.Copy(w, rc)
+	_, _ = io.Copy(w, rc)
 }
 
 func (s *Server) workCover(w http.ResponseWriter, r *http.Request) {

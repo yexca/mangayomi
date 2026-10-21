@@ -37,3 +37,10 @@ Initial version, planned as v0.1.0.
   `docker-compose.dev.yml` builds from source for development.
 - Release images for `linux/amd64` and `linux/arm64` on Docker Hub and GHCR
   (`yexca/mangayomi`), published by a tag-triggered release workflow.
+
+## Development and docs
+
+- Release images build from base images pinned by digest, and workflows use
+  actions pinned by commit SHA, kept current by Dependabot.
+- CI runs `golangci-lint` and checks npm registry signatures; a daily workflow
+  audits Go and npm dependencies against advisory databases.

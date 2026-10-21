@@ -1,0 +1,65 @@
+# Dependency update policy: docs/development/security.md#dependencies
+#
+# The Go and Node toolchain versions are repeated across go.mod, .nvmrc, and
+# the Dockerfile. Upgrade them by hand in one change; Dependabot tracks only
+# the Alpine runtime image. Workflows read both versions from go.mod and .nvmrc.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: ci(actions)
+    groups:
+      github-actions:
+        patterns: ["*"]
+
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: build(docker)
+    ignore:
+      - dependency-name: golang
+      - dependency-name: node
+    groups:
+      docker-base-images:
+        patterns: ["*"]
+
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: build(deps)
+    groups:
+      go-minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: /web
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: build(deps)
+    ignore:
+      # Type definitions follow the pinned Node major.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+    groups:
+      npm-minor-and-patch:
+        update-types: [minor, patch]

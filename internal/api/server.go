@@ -183,7 +183,7 @@ func serveIndex(w http.ResponseWriter, r *http.Request, fsys fs.FS) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.Write(b)
+	_, _ = w.Write(b)
 }
 
 // ---- helpers ----

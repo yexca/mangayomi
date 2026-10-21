@@ -1,0 +1,23 @@
+version: "2"
+
+run:
+  timeout: 5m
+  tests: true
+
+linters:
+  default: none
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+  exclusions:
+    # Unchecked Close, Flush, Remove, and print calls stay idiomatic.
+    presets:
+      - std-error-handling
+
+issues:
+  # Report every finding instead of the first few of each kind.
+  max-issues-per-linter: 0
+  max-same-issues: 0

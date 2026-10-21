@@ -38,8 +38,13 @@ for the threat model.
 ## Dependencies
 
 - Prefer the standard library and pure-Go modules.
-- Run `make backend-vuln` and `make frontend-audit` when adding or updating
-  dependencies.
+- Run `make dependency-audit` when adding or updating dependencies.
+- GitHub Actions are pinned to a full commit SHA with the release version as a
+  comment. Dockerfile base images are pinned to an exact version and digest.
+- Dependabot proposes weekly grouped updates for Actions, Go modules, npm
+  packages, and the Alpine runtime image, and waits seven days after a release
+  before proposing it. The Go and Node toolchains are repeated in `go.mod`,
+  `.nvmrc`, and the Dockerfile, so they are upgraded by hand in one change.
 
 ## Review Checklist
 

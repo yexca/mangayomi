@@ -24,4 +24,5 @@ web/node_modules/.tmp/
 .env.*
 !.env.example
 /.smoke/
-/.claude/
+/.claude/*
+!/.claude/skills/

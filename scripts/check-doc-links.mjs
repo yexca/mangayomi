@@ -74,6 +74,7 @@ function checkFile(file) {
 const files = [
   ...publicRootFiles.map((f) => path.join(repositoryRoot, f)).filter((f) => fs.existsSync(f)),
   ...markdownFiles(path.join(repositoryRoot, "docs")),
+  ...markdownFiles(path.join(repositoryRoot, ".claude", "skills")),
 ];
 const failures = files.flatMap(checkFile);
 

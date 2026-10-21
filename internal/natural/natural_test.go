@@ -17,7 +17,7 @@ func TestSort(t *testing.T) {
 }
 
 func TestKeyOrder(t *testing.T) {
-	if !(Key("ch 9") < Key("ch 10")) {
+	if Key("ch 9") >= Key("ch 10") {
 		t.Error("Key should order numbers numerically")
 	}
 	if Key("ABC") != Key("abc") {

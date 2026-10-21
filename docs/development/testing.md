@@ -54,6 +54,7 @@ placeholders. `cmd/sampledata` follows the same rules.
 
 | Command | What it runs |
 | --- | --- |
+| `make backend-lint` | `golangci-lint` with `scripts/golangci-lint.yml` |
 | `make backend-test` | `go test ./...` |
 | `make backend-race` | Tests with the race detector (needs a C toolchain) |
 | `make backend-coverage` | Tests with a coverage summary |
@@ -62,7 +63,26 @@ placeholders. `cmd/sampledata` follows the same rules.
 | `make frontend-build` | Production build including the service worker |
 | `make docs` | Relative links and locale coverage in public docs |
 | `make smoke` | Builds the image and runs `scripts/smoke.mjs` |
+| `make dependency-audit` | `govulncheck`, `npm audit`, and npm registry signatures |
 | `make ci-local` | Everything CI runs |
+
+The `Dependency Audit` workflow runs `make -k dependency-audit` against `main`
+every day, so an advisory for an unchanged dependency fails without waiting
+for a pull request.
+
+## Local Pitfalls
+
+- Every frontend target, including `make ci-style` and `make ci-frontend`,
+  runs `npm ci` through `frontend-install`. A running Vite dev server holds
+  the esbuild binary open, so on Windows `npm ci` fails with `EPERM`. Stop the
+  dev server first, or call the npm scripts in `web/` directly while it runs.
+- In a `core.autocrlf=true` checkout, plain `gofmt -l` lists every file with
+  CRLF line endings. `make backend-format` compares with LF line endings, as
+  Git stores them.
+- Windows cannot remove or rename a file, or a folder containing one, while
+  the media service holds the archive open. Tests that move library files call
+  `Evict` for the file or `Close` on the service first, and check the error of
+  the move so the case under test cannot pass without running.
 
 ## Smoke Test
 

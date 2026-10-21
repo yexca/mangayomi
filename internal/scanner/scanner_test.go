@@ -44,7 +44,9 @@ func writeZip(t *testing.T, p string, names ...string) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		w.Write(pngBytes(t))
+		if _, err := w.Write(pngBytes(t)); err != nil {
+			t.Fatal(err)
+		}
 	}
 	zw.Close()
 	f.Close()
@@ -206,8 +208,11 @@ func TestScanLibrary(t *testing.T) {
 	}
 
 	// A missing root must not wipe the index.
-	os.Rename(root, root+"-gone")
-	defer os.Rename(root+"-gone", root)
+	sc.media.Close() // Windows cannot rename a folder with open archives
+	if err := os.Rename(root, root+"-gone"); err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = os.Rename(root+"-gone", root) }()
 	sc.Trigger(lib.ID)
 	for sc.Running(lib.ID) {
 		time.Sleep(10 * time.Millisecond)

@@ -55,8 +55,8 @@ that covers the files you changed:
 ```sh
 make docs          # documentation links and locale coverage
 make ci-style      # Go formatting, frontend lint and types, docs
-make ci-backend    # go mod verify, vet, tests, race tests, govulncheck
-make ci-frontend   # npm audit and production build
+make ci-backend    # go mod verify, golangci-lint, vet, tests, race tests, govulncheck
+make ci-frontend   # npm audit, registry signatures, and production build
 make smoke         # Docker image and runtime behavior
 ```
 

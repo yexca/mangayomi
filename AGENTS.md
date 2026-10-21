@@ -13,6 +13,10 @@ Read these first:
 - `SECURITY.md`
 - `docs/development/security.md`
 
+Recurring repository procedures are agent skills in
+[`.claude/skills/`](.claude/skills/README.md); follow a skill's `SKILL.md` when
+its description matches the task.
+
 ## Product Boundaries
 
 Critical rule:
@@ -72,6 +76,27 @@ cmd -> internal/api -> feature packages (scanner, deletion, auth) -> store, medi
   fixtures use generic names such as `Author A` and `Series One`, never real
   titles, authors, or personal paths.
 
+## Documentation
+
+Docs describe the current system and its current decisions, not how it got
+there. Where each topic belongs is in
+[Documentation Rules](docs/README.md#documentation-rules).
+
+- Write in present tense. Do not narrate change: no "previously", "no longer",
+  "now", "was removed", version-dated asides, PR/issue/commit references, or
+  before/after comparisons.
+- When behavior changes, rewrite the affected section as if it had always been
+  this way instead of appending a paragraph. Search for and remove every
+  statement the change contradicts, including user pages, operations pages,
+  and translations.
+- History belongs only in `docs/history/` and in the context of ADRs in
+  `docs/decisions/`.
+- Reference docs contain no TODOs, plans, roadmaps, or dated measurement logs.
+- State each rule or fact in one place and link to it instead of restating it.
+- When an English user page or `README.md` changes, update the matching locale
+  pages in the same change. If a translation cannot be updated, remove the
+  stale passage rather than leave it contradicting the English page.
+
 ## Validation Commands
 
 The `Makefile` is the canonical entry point for repository validation. Prefer
@@ -84,7 +109,13 @@ same commands.
 - Use `make smoke` for Docker, entrypoint, or runtime changes. It builds the
   image and exercises setup, scanning, page serving, and deletion against
   disposable mounts.
-- `make ci-local` runs everything CI runs.
+- `make ci-local` runs everything CI runs. `make dependency-audit` runs only
+  the advisory checks.
+- Redirect the output of slow targets (`make ci-*`, `make smoke`) to a log
+  file outside tracked paths and read that file, rather than piping it through
+  `tail` or `grep` and re-running the target to see another part.
+- Known local tool and Windows traps are in
+  [Local Pitfalls](docs/development/testing.md#local-pitfalls).
 - Before every commit, run `make sensitive-check` and review every finding.
   Do not silence it with source comments; add a reviewed entry with a reason to
   `scripts/sensitive-allowlist.json` only for data that is genuinely public.
@@ -100,6 +131,16 @@ same commands.
 - Record user-visible changes in `docs/history/unreleased.md`.
 - Before handoff, run validation proportional to the change and
   `make sensitive-check`.
+
+Do not invent identifiers. Issue and PR numbers, versions, and release tags
+come from the repository, the user, or the referenced issue; ask when none
+applies. Commit messages, issue text, and PR text reference functions, files,
+settings, and make targets by name, not by line number, because the text
+outlives the code.
+
+Do not push, open or update a pull request, or post on issues, discussions, or
+reviews without the user's explicit approval for that action. Draft the text
+first and let the user review it.
 
 Public tracked code and docs must use generic examples: reserved domains,
 `/path/to/manga`-style paths, and synthetic names. Never commit databases,
