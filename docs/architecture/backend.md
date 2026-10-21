@@ -59,6 +59,13 @@ Conventions:
 - Covers are the first page scaled to 400 px wide, encoded as JPEG, written to
   `/config/cache/covers/<id>.jpg`, and generated at most two at a time.
   Concurrent requests for the same cover share one render.
+- Large pages are box-averaged on their decoded planes (YCbCr, gray, RGBA) to
+  between one and two cover widths before the bilinear pass; filtering the
+  full page with the bilinear kernel cost about as much as decoding it.
+- After a scan that adds or changes works, and for every library at startup,
+  one background worker renders missing covers in title order, one at a time,
+  so on-demand requests keep a decode slot. A cover that fails is retried only
+  after its work changes.
 - Page dimensions are read from image headers on the first reader visit and
   stored, so the reader can pair pages and detect spreads before loading them.
 

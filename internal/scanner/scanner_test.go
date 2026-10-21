@@ -217,3 +217,44 @@ func TestScanLibrary(t *testing.T) {
 		t.Errorf("works after missing root = %d, want 3", total)
 	}
 }
+
+// A scan that adds works queues them for the background cover worker; a work
+// whose first page cannot be decoded must not stop the others.
+func TestCoverWarmerRendersAfterScan(t *testing.T) {
+	sc, st := newTestScanner(t)
+	ctx, cancel := context.WithCancel(context.Background())
+	t.Cleanup(func() { cancel(); sc.Wait() })
+	sc.StartCoverWarmer(ctx)
+
+	root := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(root, "Author A", "Series One", "Vol 01"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, "Author A", "Series One", "Vol 01", "001.png"), []byte("not an image"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	writeZip(t, filepath.Join(root, "Author A", "Series One", "Vol 02.cbz"), "001.png")
+	writeImages(t, filepath.Join(root, "Author B", "Sketchbook"), "001.png")
+	lib := store.Library{Name: "Test", Path: root, Pattern: "{author}/{series}", ReadingDirection: "rtl"}
+	if err := st.CreateLibrary(context.Background(), &lib); err != nil {
+		t.Fatal(err)
+	}
+	runScan(t, sc, lib.ID)
+
+	works, _, err := st.ListWorks(context.Background(), store.WorkFilter{LibraryID: lib.ID})
+	if err != nil {
+		t.Fatal(err)
+	}
+	deadline := time.Now().Add(10 * time.Second)
+	for _, w := range works {
+		if w.Title == "Vol 01" {
+			continue
+		}
+		for !sc.media.HasCover(w.ID) {
+			if time.Now().After(deadline) {
+				t.Fatalf("no cover rendered for %q", w.Title)
+			}
+			time.Sleep(10 * time.Millisecond)
+		}
+	}
+}

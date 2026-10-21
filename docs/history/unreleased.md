@@ -18,6 +18,11 @@ Initial version, planned as v0.1.0.
   keyboard shortcuts, and automatic progress sync.
 - Installable PWA with cached covers and recently read pages.
 
+## Performance
+
+- Covers are rendered in the background after each scan, and large pages are
+  downscaled several times faster.
+
 ## Deletion
 
 - Two-step deletion for a work, a selection, a series, or an author, listing

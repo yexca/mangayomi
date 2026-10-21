@@ -80,6 +80,7 @@ func serve(cfg config.Config, log *slog.Logger) error {
 	defer stop()
 
 	go sc.RunScheduler(ctx)
+	sc.StartCoverWarmer(ctx)
 	go func() {
 		t := time.NewTicker(time.Hour)
 		defer t.Stop()

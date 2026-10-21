@@ -29,7 +29,8 @@ regenerated on demand.
 ## What Can Be Rebuilt
 
 - The work index is rebuilt by scanning.
-- Covers and page dimensions are regenerated when viewed.
+- Covers are regenerated in the background after startup and scans, or when
+  viewed. Page dimensions are regenerated when a work is opened.
 - Reading progress, library definitions, and the password cannot be rebuilt.
 
 ## Migrations

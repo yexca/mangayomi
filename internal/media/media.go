@@ -198,6 +198,11 @@ func (s *Service) CoverPath(id int64) string {
 	return filepath.Join(s.coverDir, fmt.Sprintf("%d.jpg", id))
 }
 
+func (s *Service) HasCover(id int64) bool {
+	_, err := os.Stat(s.CoverPath(id))
+	return err == nil
+}
+
 func (s *Service) RemoveCover(id int64) {
 	_ = os.Remove(s.CoverPath(id))
 }
@@ -246,6 +251,11 @@ func (s *Service) renderCover(wf store.WorkFile, dst string) error {
 		return fmt.Errorf("decode cover: %w", err)
 	}
 
+	// Average down to between one and two cover widths first, so the
+	// bilinear pass below only has a small image left to filter.
+	if f := src.Bounds().Dx() / coverWidth; f >= 2 {
+		src = shrink(src, f)
+	}
 	b := src.Bounds()
 	w, h := b.Dx(), b.Dy()
 	if w > coverWidth {

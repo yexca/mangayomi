@@ -37,6 +37,12 @@ type Scanner struct {
 	cancels map[int64]context.CancelFunc
 	done    map[int64]chan struct{}
 	wg      sync.WaitGroup
+
+	// Cover warmer queue; see covers.go.
+	warmQueue  []int64
+	warmQueued map[int64]bool
+	warmWake   chan struct{}
+	warmCancel context.CancelFunc
 }
 
 func New(st *store.Store, m *media.Service, log *slog.Logger) *Scanner {
@@ -47,6 +53,9 @@ func New(st *store.Store, m *media.Service, log *slog.Logger) *Scanner {
 		status:  map[int64]*Status{},
 		cancels: map[int64]context.CancelFunc{},
 		done:    map[int64]chan struct{}{},
+
+		warmQueued: map[int64]bool{},
+		warmWake:   make(chan struct{}, 1),
 	}
 }
 
@@ -85,6 +94,9 @@ func (s *Scanner) Trigger(libraryID int64) bool {
 		} else {
 			s.log.Info("scan finished", "library", libraryID, "scanned", st.Scanned,
 				"added", st.Added, "updated", st.Updated, "removed", st.Removed)
+			if st.Added+st.Updated > 0 {
+				s.queueCovers(libraryID)
+			}
 		}
 	}()
 	return true
@@ -131,7 +143,8 @@ func (s *Scanner) Running(libraryID int64) bool {
 	return ok && st.Running
 }
 
-// Wait blocks until all running scans have returned; call after CancelAll.
+// Wait blocks until all running scans and the cover warmer have returned;
+// call after CancelAll.
 func (s *Scanner) Wait() { s.wg.Wait() }
 
 func (s *Scanner) CancelAll() {
@@ -139,6 +152,9 @@ func (s *Scanner) CancelAll() {
 	defer s.mu.Unlock()
 	for _, c := range s.cancels {
 		c()
+	}
+	if s.warmCancel != nil {
+		s.warmCancel()
 	}
 }
 
