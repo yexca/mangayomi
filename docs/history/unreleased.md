@@ -40,6 +40,8 @@ Initial version, planned as v0.1.0.
 
 ## Development and docs
 
+- The server builds with Go 1.27.3, which carries the standard library
+  security fixes for `net/http`, `crypto/tls`, and `crypto/x509`.
 - Release images build from base images pinned by digest, and workflows use
   actions pinned by commit SHA, kept current by Dependabot.
 - CI runs `golangci-lint` and checks npm registry signatures; a daily workflow

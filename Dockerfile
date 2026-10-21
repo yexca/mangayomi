@@ -15,7 +15,7 @@ COPY web/ ./
 RUN npm run build
 
 # ---- backend ----
-FROM --platform=$BUILDPLATFORM golang:1.26.6-alpine@sha256:3889b425f035be855a72fb4755265311293b6d414521f0a519d819df32222d83 AS server
+FROM --platform=$BUILDPLATFORM golang:1.27.3-alpine@sha256:f2c872bcee949b7be9c490efd02b48a8a2fbf947cdf533f1c58525ec9d8170fd AS server
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download

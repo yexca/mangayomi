@@ -12,7 +12,7 @@ DOCKER_IMAGE ?= mangayomi:dev
 DOCKER_COMPOSE_DEV ?= $(DOCKER) compose -f docker-compose.dev.yml
 DOCKER_BUILD_ARGS ?=
 GOVULNCHECK_VERSION ?= v1.7.0
-GOLANGCI_LINT_VERSION ?= v2.13.1
+GOLANGCI_LINT_VERSION ?= v2.15.0
 GOLANGCI_LINT_TIMEOUT ?= 5m
 GO_DIRS := cmd internal scripts
 
