@@ -35,7 +35,7 @@ All routes are under `/api`. Everything except `GET /api/health`,
 | Folders | `GET fs/browse?path=&base=` |
 | Libraries | `GET/POST libraries`, `GET/PUT/DELETE libraries/{id}`, `POST libraries/preview`, `POST libraries/{id}/scan`, `POST libraries/scan`, `GET scan/status` |
 | Works | `GET home`, `GET works`, `GET works/{id}`, `GET works/{id}/pages`, `GET works/{id}/pages/{n}`, `GET works/{id}/cover`, `PUT works/{id}/progress`, `POST progress/batch` |
-| Groups | `GET series`, `GET authors` |
+| Groups | `GET series`, `GET authors` (optional `offset` and `limit`; responses include `total`) |
 | Deletion | `POST delete/preview`, `POST delete/confirm` |
 
 Conventions:

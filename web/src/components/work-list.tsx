@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
-import { Loader2Icon } from "lucide-react"
-import { useEffect, useMemo, useRef, type ReactNode } from "react"
+import { useEffect, useMemo, type ReactNode } from "react"
 
+import { LoadMore } from "@/components/load-more"
 import { SelectionBar } from "@/components/selection-bar"
 import { CardGrid, WorkCard } from "@/components/work-card"
 import type { Selection } from "@/hooks/use-selection"
@@ -36,21 +36,6 @@ export function WorkList({ query, selection, empty, subtitle, onTotal }: WorkLis
     if (total !== undefined) onTotal?.(total)
   }, [total, onTotal])
 
-  const sentinel = useRef<HTMLDivElement>(null)
-  const { hasNextPage, isFetchingNextPage, fetchNextPage } = list
-  useEffect(() => {
-    const el = sentinel.current
-    if (!el || !hasNextPage) return
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting && !isFetchingNextPage) fetchNextPage()
-      },
-      { rootMargin: "800px" },
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage])
-
   if (list.isLoading) return <GridSkeleton />
   if (works.length === 0) return <>{empty}</>
 
@@ -68,9 +53,7 @@ export function WorkList({ query, selection, empty, subtitle, onTotal }: WorkLis
           />
         ))}
       </CardGrid>
-      <div ref={sentinel} className="flex h-16 items-center justify-center text-muted-foreground">
-        {isFetchingNextPage && <Loader2Icon className="size-5 animate-spin" />}
-      </div>
+      <LoadMore query={list} />
       <SelectionBar selection={selection} allIds={works.map((w) => w.id)} />
     </>
   )

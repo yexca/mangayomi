@@ -227,10 +227,10 @@ export const api = {
     request("PUT", `/api/works/${id}/progress`, { page, completed }),
   markCompleted: (target: DeleteTarget, completed: boolean) =>
     request<{ updated: number }>("POST", "/api/progress/batch", { ...target, completed }),
-  series: (p: { library?: number; author?: string; q?: string; sort?: string }) =>
-    request<{ series: SeriesGroup[] }>("GET", `/api/series${qs(p)}`),
-  authors: (p: { library?: number; q?: string; sort?: string }) =>
-    request<{ authors: AuthorGroup[] }>("GET", `/api/authors${qs(p)}`),
+  series: (p: { library?: number; author?: string; q?: string; sort?: string; offset?: number; limit?: number }) =>
+    request<{ series: SeriesGroup[]; total: number }>("GET", `/api/series${qs(p)}`),
+  authors: (p: { library?: number; q?: string; sort?: string; offset?: number; limit?: number }) =>
+    request<{ authors: AuthorGroup[]; total: number }>("GET", `/api/authors${qs(p)}`),
 
   deletePreview: (target: DeleteTarget) => request<DeletePlan>("POST", "/api/delete/preview", target),
   deleteConfirm: (token: string) => request<DeleteResult>("POST", "/api/delete/confirm", { token }),

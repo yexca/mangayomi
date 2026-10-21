@@ -362,6 +362,18 @@ type GroupFilter struct {
 	Author    *string
 	Query     string
 	Sort      string // "name" or "added"
+	Offset    int
+	Limit     int // 0 = no limit
+}
+
+// page applies the filter offset and limit to a sorted group list. Groups
+// are sorted in Go (natural order), so paging happens after the query.
+func page[T any](items []T, f GroupFilter) []T {
+	items = items[min(f.Offset, len(items)):]
+	if f.Limit > 0 && f.Limit < len(items) {
+		items = items[:f.Limit]
+	}
+	return items
 }
 
 func (f GroupFilter) where(searchCols ...string) (string, []any) {
@@ -389,7 +401,8 @@ func (f GroupFilter) where(searchCols ...string) (string, []any) {
 	return " AND " + strings.Join(conds, " AND "), args
 }
 
-func (s *Store) ListSeries(ctx context.Context, f GroupFilter) ([]SeriesGroup, error) {
+// ListSeries returns one page of series groups and the total count.
+func (s *Store) ListSeries(ctx context.Context, f GroupFilter) ([]SeriesGroup, int, error) {
 	where, args := f.where("w.series", "w.author")
 	rows, err := s.db.QueryContext(ctx, `
 WITH ranked AS (
@@ -401,14 +414,14 @@ SELECT author, series, COUNT(*), SUM(done), MAX(added_at),
 	MAX(CASE WHEN rn = 1 THEN id END), MAX(CASE WHEN rn = 1 THEN mtime END)
 FROM ranked GROUP BY author, series`, args...)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 	groups := []SeriesGroup{}
 	for rows.Next() {
 		var g SeriesGroup
 		if err := rows.Scan(&g.Author, &g.Series, &g.Count, &g.Completed, &g.LastAddedAt, &g.CoverID, &g.CoverVersion); err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		groups = append(groups, g)
 	}
@@ -422,10 +435,14 @@ FROM ranked GROUP BY author, series`, args...)
 			return natural.Less(groups[i].Author, groups[j].Author)
 		})
 	}
-	return groups, rows.Err()
+	if err := rows.Err(); err != nil {
+		return nil, 0, err
+	}
+	return page(groups, f), len(groups), nil
 }
 
-func (s *Store) ListAuthors(ctx context.Context, f GroupFilter) ([]AuthorGroup, error) {
+// ListAuthors returns one page of author groups and the total count.
+func (s *Store) ListAuthors(ctx context.Context, f GroupFilter) ([]AuthorGroup, int, error) {
 	f.Author = nil
 	where, args := f.where("w.author")
 	rows, err := s.db.QueryContext(ctx, `
@@ -438,14 +455,14 @@ SELECT author, COUNT(*), COUNT(DISTINCT NULLIF(series, '')), SUM(done), MAX(adde
 	MAX(CASE WHEN rn = 1 THEN id END), MAX(CASE WHEN rn = 1 THEN mtime END)
 FROM ranked GROUP BY author`, args...)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 	groups := []AuthorGroup{}
 	for rows.Next() {
 		var g AuthorGroup
 		if err := rows.Scan(&g.Author, &g.Count, &g.SeriesCount, &g.Completed, &g.LastAddedAt, &g.CoverID, &g.CoverVersion); err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		groups = append(groups, g)
 	}
@@ -454,7 +471,10 @@ FROM ranked GROUP BY author`, args...)
 	} else {
 		sort.SliceStable(groups, func(i, j int) bool { return natural.Less(groups[i].Author, groups[j].Author) })
 	}
-	return groups, rows.Err()
+	if err := rows.Err(); err != nil {
+		return nil, 0, err
+	}
+	return page(groups, f), len(groups), nil
 }
 
 // ---- progress ----

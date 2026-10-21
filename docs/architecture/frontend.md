@@ -35,6 +35,8 @@ Series and author names travel in query strings because they may contain `/`.
 
 - TanStack Query owns server state. Mutations invalidate affected queries
   rather than patching caches.
+- The library, series, and author lists load 60 items at a time and fetch
+  the next page as the end of the grid nears the viewport (`LoadMore`).
 - A `401` from any API call invalidates the `auth` query, which returns the
   app to the sign-in screen.
 - Scan status is polled every 1.5 seconds only while a scan runs; when it

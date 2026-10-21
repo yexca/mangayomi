@@ -1,12 +1,13 @@
-import { useQuery } from "@tanstack/react-query"
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { ListChecksIcon, MoreHorizontalIcon, SearchIcon, UsersIcon } from "lucide-react"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useSearchParams } from "react-router"
 
 import { DeleteDialog } from "@/components/delete-dialog"
 import { GroupCard } from "@/components/group-card"
 import { GroupMenuItems } from "@/components/group-actions"
+import { LoadMore } from "@/components/load-more"
 import { LibrarySelect, useActiveLibrary } from "@/components/library-select"
 import { EmptyState, PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
@@ -21,6 +22,8 @@ import { api, type DeleteTarget } from "@/lib/api"
 import { GridSkeleton } from "@/pages/home"
 import { authorLink, seriesLink } from "@/lib/links"
 
+const PAGE = 60
+
 export function AuthorsListPage() {
   const { t } = useTranslation()
   const library = useActiveLibrary()
@@ -28,15 +31,21 @@ export function AuthorsListPage() {
   const q = useDebounce(search)
   const [sort, setSort] = useState("name")
   const [deleting, setDeleting] = useState<DeleteTarget | null>(null)
-  const list = useQuery({
+  const list = useInfiniteQuery({
     queryKey: ["authors", library, q, sort],
-    queryFn: () => api.authors({ library, q, sort }),
+    queryFn: ({ pageParam }) => api.authors({ library, q, sort, offset: pageParam, limit: PAGE }),
+    initialPageParam: 0,
+    getNextPageParam: (last, all) => {
+      const loaded = all.reduce((n, p) => n + p.authors.length, 0)
+      return loaded < last.total ? loaded : undefined
+    },
   })
-  const authors = list.data?.authors ?? []
+  const authors = useMemo(() => list.data?.pages.flatMap((p) => p.authors) ?? [], [list.data])
+  const total = list.data?.pages[0]?.total ?? 0
 
   return (
     <>
-      <PageHeader title={t("authors.title")} description={list.data ? String(authors.length) : undefined} />
+      <PageHeader title={t("authors.title")} description={list.data ? String(total) : undefined} />
       <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center">
         <div className="relative flex-1">
           <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -90,6 +99,7 @@ export function AuthorsListPage() {
           />
         ))}
       </CardGrid>
+      <LoadMore query={list} />
       <DeleteDialog target={deleting} onClose={() => setDeleting(null)} />
     </>
   )

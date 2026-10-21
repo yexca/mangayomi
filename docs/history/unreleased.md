@@ -17,6 +17,7 @@ Initial version, planned as v0.1.0.
   automatic layouts, spread detection, cover-alone option, tap zones, swipe,
   keyboard shortcuts, and automatic progress sync.
 - Installable PWA with cached covers and recently read pages.
+- Series and author lists load page by page as you scroll.
 
 ## Performance
 

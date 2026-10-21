@@ -29,7 +29,7 @@ normally require coverage. Pure presentation changes normally do not.
 Current backend tests cover natural ordering, pattern parsing, full and
 incremental scans (including unchanged rescans, pattern changes, removals, and
 an unavailable root), background cover rendering after a scan, cover
-thumbnails for each decoded pixel format, and deletion (series with emptied folders, token reuse,
+thumbnails for each decoded pixel format, group list paging, and deletion (series with emptied folders, token reuse,
 library-root refusal, empty author/series targets).
 
 ## Synthetic Fixture Data

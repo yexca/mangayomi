@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import {
   BookOpenIcon,
   ListChecksIcon,
@@ -6,13 +6,14 @@ import {
   PlayIcon,
   SearchIcon,
 } from "lucide-react"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useSearchParams } from "react-router"
 
 import { DeleteDialog } from "@/components/delete-dialog"
 import { GroupCard } from "@/components/group-card"
 import { GroupMenuItems } from "@/components/group-actions"
+import { LoadMore } from "@/components/load-more"
 import { LibrarySelect, useActiveLibrary } from "@/components/library-select"
 import { EmptyState, PageHeader } from "@/components/page-header"
 import { SelectionBar } from "@/components/selection-bar"
@@ -27,6 +28,8 @@ import { api, type DeleteTarget } from "@/lib/api"
 import { authorLink, nextToRead, seriesLink } from "@/lib/links"
 import { GridSkeleton } from "@/pages/home"
 
+const PAGE = 60
+
 export function SeriesListPage() {
   const { t } = useTranslation()
   const library = useActiveLibrary()
@@ -34,17 +37,23 @@ export function SeriesListPage() {
   const q = useDebounce(search)
   const [sort, setSort] = useState("name")
   const [deleting, setDeleting] = useState<DeleteTarget | null>(null)
-  const list = useQuery({
-    queryKey: ["series", library, q, sort],
-    queryFn: () => api.series({ library, q, sort }),
+  const list = useInfiniteQuery({
+    queryKey: ["series", "list", library, q, sort],
+    queryFn: ({ pageParam }) => api.series({ library, q, sort, offset: pageParam, limit: PAGE }),
+    initialPageParam: 0,
+    getNextPageParam: (last, all) => {
+      const loaded = all.reduce((n, p) => n + p.series.length, 0)
+      return loaded < last.total ? loaded : undefined
+    },
   })
-  const series = list.data?.series ?? []
+  const series = useMemo(() => list.data?.pages.flatMap((p) => p.series) ?? [], [list.data])
+  const total = list.data?.pages[0]?.total ?? 0
 
   return (
     <>
       <PageHeader
         title={t("series.title")}
-        description={list.data ? t("common.series", { count: series.length }) : undefined}
+        description={list.data ? t("common.series", { count: total }) : undefined}
       />
       <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center">
         <div className="relative flex-1">
@@ -91,6 +100,7 @@ export function SeriesListPage() {
           )
         })}
       </CardGrid>
+      <LoadMore query={list} />
       <DeleteDialog target={deleting} onClose={() => setDeleting(null)} />
     </>
   )

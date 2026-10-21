@@ -50,30 +50,43 @@ func (s *Server) listWorks(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) listSeries(w http.ResponseWriter, r *http.Request) {
-	groups, err := s.store.ListSeries(r.Context(), store.GroupFilter{
+	groups, total, err := s.store.ListSeries(r.Context(), store.GroupFilter{
 		LibraryID: queryInt64(r, "library"),
 		Author:    queryOptional(r, "author"),
 		Query:     r.URL.Query().Get("q"),
 		Sort:      r.URL.Query().Get("sort"),
+		Offset:    max(queryInt(r, "offset", 0), 0),
+		Limit:     groupLimit(r),
 	})
 	if err != nil {
 		s.internal(w, r, err)
 		return
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"series": groups})
+	writeJSON(w, http.StatusOK, map[string]any{"series": groups, "total": total})
 }
 
 func (s *Server) listAuthors(w http.ResponseWriter, r *http.Request) {
-	groups, err := s.store.ListAuthors(r.Context(), store.GroupFilter{
+	groups, total, err := s.store.ListAuthors(r.Context(), store.GroupFilter{
 		LibraryID: queryInt64(r, "library"),
 		Query:     r.URL.Query().Get("q"),
 		Sort:      r.URL.Query().Get("sort"),
+		Offset:    max(queryInt(r, "offset", 0), 0),
+		Limit:     groupLimit(r),
 	})
 	if err != nil {
 		s.internal(w, r, err)
 		return
 	}
-	writeJSON(w, http.StatusOK, map[string]any{"authors": groups})
+	writeJSON(w, http.StatusOK, map[string]any{"authors": groups, "total": total})
+}
+
+// groupLimit reads an optional page size for group lists; without one the
+// whole list is returned (an author page lists all of its series).
+func groupLimit(r *http.Request) int {
+	if !r.URL.Query().Has("limit") {
+		return 0
+	}
+	return min(max(queryInt(r, "limit", 60), 1), 500)
 }
 
 type workDetail struct {
