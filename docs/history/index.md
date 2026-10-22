@@ -14,4 +14,4 @@ Record changes that are not released yet in [Unreleased](unreleased.md).
 
 ## Releases
 
-No release has been published yet.
+- [v0.1.0](v0.1.0.md)
