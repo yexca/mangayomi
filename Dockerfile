@@ -3,7 +3,7 @@
 # The build stages run on the build host and cross-compile, so multi-platform
 # images only emulate the small runtime stage.
 #
-# Base images are pinned by digest. Go matches go.mod and Node the major in
+# Base images are pinned by digest. Go matches go.mod and Node matches
 # .nvmrc; upgrade those toolchains by hand. Dependabot refreshes Alpine.
 
 # ---- frontend ----

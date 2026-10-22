@@ -42,6 +42,9 @@ Initial version, planned as v0.1.0.
 
 - The server builds with Go 1.27.3, which carries the standard library
   security fixes for `net/http`, `crypto/tls`, and `crypto/x509`.
+- The web client builds with Node.js 24.22.1 in both CI and the Docker image,
+  which carries the Node.js fixes for its Brotli decoder, TLS hostname checks,
+  and `dns.resolve`.
 - Release images build from base images pinned by digest, and workflows use
   actions pinned by commit SHA, kept current by Dependabot.
 - CI runs `golangci-lint` and checks npm registry signatures; a daily workflow
