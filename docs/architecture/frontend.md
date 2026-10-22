@@ -13,6 +13,7 @@ react-i18next, and `vite-plugin-pwa`. The production build is written to
 | `src/pages/` | One file per screen: home, browse, series, authors, work, reader, settings, login. |
 | `src/components/` | App components (cards, grids, dialogs such as the library form, app shell). |
 | `src/components/ui/` | Generated shadcn/ui primitives. |
+| `src/shadcn.css` | Theme variants and keyframes the shadcn/ui primitives expect. |
 | `src/hooks/` | Selection, reader preferences, scan status polling, library filter. |
 | `src/lib/` | API client and types, formatting, links, spreads, storage helpers. |
 | `src/i18n/` | i18next setup and `locales/en.json`. |

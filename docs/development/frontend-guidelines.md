@@ -18,7 +18,10 @@
 
 React, TypeScript, Vite, Tailwind CSS, shadcn/ui on Radix, and lucide-react.
 Add primitives with the shadcn CLI and keep generated files in
-`src/components/ui` close to upstream.
+`src/components/ui` close to upstream. The CLI runs through `npx` and is not a
+project dependency; the theme variants and keyframes it expects live in
+`src/shadcn.css`, copied from the `shadcn/tailwind.css` file of the release
+named in its header. Refresh that file when a CLI update changes it.
 
 Use semantic theme tokens (`bg-background`, `text-muted-foreground`,
 `bg-destructive`, ...) rather than raw colors, except inside the reader, which
