@@ -39,6 +39,9 @@ for the threat model.
 
 - Prefer the standard library and pure-Go modules.
 - Run `make dependency-audit` when adding or updating dependencies.
+- The PWA build keeps Workbox's `glob` and EJS dependency branches on patched
+  releases through scoped npm overrides in `web/package.json`; verify the
+  dependency audit and production build when changing those overrides.
 - GitHub Actions are pinned to a full commit SHA with the release version as a
   comment. Dockerfile base images are pinned to an exact version and digest.
 - Dependabot proposes weekly grouped updates for Actions, Go modules, npm
