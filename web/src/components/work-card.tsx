@@ -1,4 +1,5 @@
 import { CheckIcon } from "lucide-react"
+import { Children, type ReactNode } from "react"
 import { Link } from "react-router"
 
 import { Cover } from "@/components/cover"
@@ -77,7 +78,18 @@ export function WorkCard({ work, selecting, selected, onToggle, subtitle }: Work
   )
 }
 
-export function CardGrid({ children, className }: { children: React.ReactNode; className?: string }) {
+interface CardGridProps {
+  children: ReactNode
+  className?: string
+  /**
+   * For long, growing lists: the browser skips style, layout, and paint for
+   * cards outside the viewport. The padding keeps rings and the stacked-cover
+   * hint inside the cell's paint containment; the negative margin cancels it.
+   */
+  lazy?: boolean
+}
+
+export function CardGrid({ children, className, lazy }: CardGridProps) {
   return (
     <div
       className={cn(
@@ -85,7 +97,11 @@ export function CardGrid({ children, className }: { children: React.ReactNode; c
         className,
       )}
     >
-      {children}
+      {lazy
+        ? Children.map(children, (child) => (
+            <div className="-m-1.5 p-1.5 [contain-intrinsic-block-size:auto_16rem] [content-visibility:auto]">{child}</div>
+          ))
+        : children}
     </div>
   )
 }

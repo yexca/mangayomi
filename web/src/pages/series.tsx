@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import {
   BookOpenIcon,
   ListChecksIcon,
@@ -6,14 +6,14 @@ import {
   PlayIcon,
   SearchIcon,
 } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useSearchParams } from "react-router"
 
 import { DeleteDialog } from "@/components/delete-dialog"
 import { GroupCard } from "@/components/group-card"
 import { GroupMenuItems } from "@/components/group-actions"
-import { LoadMore } from "@/components/load-more"
+import { ListFooter } from "@/components/list-footer"
 import { LibrarySelect, useActiveLibrary } from "@/components/library-select"
 import { EmptyState, PageHeader } from "@/components/page-header"
 import { SelectionBar } from "@/components/selection-bar"
@@ -23,12 +23,12 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CardGrid, WorkCard } from "@/components/work-card"
 import { useDebounce } from "@/hooks/use-debounce"
+import { usePagedList } from "@/hooks/use-paged-list"
 import { useSelection } from "@/hooks/use-selection"
 import { api, type DeleteTarget } from "@/lib/api"
 import { authorLink, nextToRead, seriesLink } from "@/lib/links"
+import { cn } from "@/lib/utils"
 import { GridSkeleton } from "@/pages/home"
-
-const PAGE = 60
 
 export function SeriesListPage() {
   const { t } = useTranslation()
@@ -37,23 +37,17 @@ export function SeriesListPage() {
   const q = useDebounce(search)
   const [sort, setSort] = useState("name")
   const [deleting, setDeleting] = useState<DeleteTarget | null>(null)
-  const list = useInfiniteQuery({
-    queryKey: ["series", "list", library, q, sort],
-    queryFn: ({ pageParam }) => api.series({ library, q, sort, offset: pageParam, limit: PAGE }),
-    initialPageParam: 0,
-    getNextPageParam: (last, all) => {
-      const loaded = all.reduce((n, p) => n + p.series.length, 0)
-      return loaded < last.total ? loaded : undefined
-    },
-  })
-  const series = useMemo(() => list.data?.pages.flatMap((p) => p.series) ?? [], [list.data])
-  const total = list.data?.pages[0]?.total ?? 0
+  const list = usePagedList(["series", "list", library, q, sort], (offset, limit) =>
+    api.series({ library, q, sort, offset, limit }).then((r) => ({ items: r.series, total: r.total })),
+  )
+  const series = list.items
+  const total = list.total ?? 0
 
   return (
     <>
       <PageHeader
         title={t("series.title")}
-        description={list.data ? t("common.series", { count: total }) : undefined}
+        description={list.total !== undefined ? t("common.series", { count: total }) : undefined}
       />
       <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center">
         <div className="relative flex-1">
@@ -81,8 +75,8 @@ export function SeriesListPage() {
       </div>
 
       {list.isLoading && <GridSkeleton />}
-      {list.data && series.length === 0 && <EmptyState icon={<BookOpenIcon />} title={t("series.empty")} />}
-      <CardGrid className="pt-1.5">
+      {list.total === 0 && <EmptyState icon={<BookOpenIcon />} title={t("series.empty")} />}
+      <CardGrid lazy={list.mode === "scroll"} className={cn("pt-1.5", list.isChangingPage && "opacity-60 transition-opacity")}>
         {series.map((s) => {
           const target: DeleteTarget = { series: [{ libraryId: library, author: s.author, series: s.series }] }
           return (
@@ -100,7 +94,7 @@ export function SeriesListPage() {
           )
         })}
       </CardGrid>
-      <LoadMore query={list} />
+      <ListFooter list={list} />
       <DeleteDialog target={deleting} onClose={() => setDeleting(null)} />
     </>
   )

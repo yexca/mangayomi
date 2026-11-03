@@ -38,6 +38,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
+import { useListMode, type ListMode } from "@/hooks/use-list-mode"
 import { useReaderPrefs } from "@/hooks/use-reader-prefs"
 import { useScanStatus } from "@/hooks/use-scan-status"
 import { languages } from "@/i18n"
@@ -247,6 +248,7 @@ function ReaderDefaults() {
 function Appearance() {
   const { t, i18n } = useTranslation()
   const { theme, setTheme } = useTheme()
+  const [listMode, setListMode] = useListMode()
   return (
     <div className="grid max-w-md gap-4 sm:grid-cols-2">
       <div className="space-y-2">
@@ -276,6 +278,19 @@ function Appearance() {
             ))}
           </SelectContent>
         </Select>
+      </div>
+      <div className="space-y-2 sm:col-span-2">
+        <Label>{t("settings.listMode")}</Label>
+        <Select value={listMode} onValueChange={(v) => setListMode(v as ListMode)}>
+          <SelectTrigger className="w-full sm:w-[calc(50%-0.5rem)]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="scroll">{t("settings.listModeScroll")}</SelectItem>
+            <SelectItem value="pages">{t("settings.listModePages")}</SelectItem>
+          </SelectContent>
+        </Select>
+        <p className="text-xs text-muted-foreground">{t("settings.listModeDescription")}</p>
       </div>
     </div>
   )

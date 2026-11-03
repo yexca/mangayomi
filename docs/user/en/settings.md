@@ -19,8 +19,13 @@ settings panel. See [Reading](reader.md#reader-settings).
 
 - **Theme:** **System**, **Light**, or **Dark**. The reader is always dark.
 - **Language:** the interface language. English is currently the only one.
+- **Loading long lists:** how the library, series, and author lists load.
+  **Infinite scroll** loads the next 60 items as you near the end of the list.
+  **Pages** shows 60 items per page with page controls below the grid; the
+  page number is part of the address, so going back returns to the same page.
+  Pages load only what you open and use the least battery.
 
-Both are stored in this browser.
+All three are stored in this browser.
 
 ## Account
 

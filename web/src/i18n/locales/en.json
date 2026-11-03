@@ -33,6 +33,13 @@
     "files_one": "{{count}} file",
     "files_other": "{{count}} files"
   },
+  "pager": {
+    "label": "Pages",
+    "previous": "Previous page",
+    "next": "Next page",
+    "page": "Page {{page}}",
+    "pageOf": "{{page}} / {{total}}"
+  },
   "nav": {
     "home": "Home",
     "library": "Library",
@@ -175,6 +182,10 @@
     "themeLight": "Light",
     "themeDark": "Dark",
     "language": "Language",
+    "listMode": "Loading long lists",
+    "listModeScroll": "Infinite scroll",
+    "listModePages": "Pages",
+    "listModeDescription": "Applies to the library, series, and author lists. Pages load only what you open and use the least battery.",
     "account": "Account",
     "changePassword": "Change password",
     "currentPassword": "Current password",
