@@ -14,7 +14,7 @@ react-i18next, and `vite-plugin-pwa`. The production build is written to
 | `src/components/` | App components (cards, grids, dialogs such as the library form, app shell). |
 | `src/components/ui/` | Generated shadcn/ui primitives. |
 | `src/shadcn.css` | Theme variants and keyframes the shadcn/ui primitives expect. |
-| `src/hooks/` | Selection, reader preferences, scan status polling, library filter. |
+| `src/hooks/` | Selection, reader preferences, list mode and paged lists, scan status polling, library filter. |
 | `src/lib/` | API client and types, formatting, links, spreads, storage helpers. |
 | `src/i18n/` | i18next setup and `locales/en.json`. |
 
@@ -36,8 +36,22 @@ Series and author names travel in query strings because they may contain `/`.
 
 - TanStack Query owns server state. Mutations invalidate affected queries
   rather than patching caches.
-- The library, series, and author lists load 60 items at a time and fetch
-  the next page as the end of the grid nears the viewport (`LoadMore`).
+- The library, series, and author lists load 60 items at a time through
+  `usePagedList`, in one of two modes chosen in Settings and stored in
+  `localStorage` (`useListMode`):
+  - Infinite scroll (default) fetches the next page as the end of the grid
+    nears the viewport (`LoadMore`, an `IntersectionObserver`, one request at
+    a time).
+  - Pages shows one page with page controls (`ListFooter`). The page number
+    is the `page` search parameter, so back navigation returns to it; a new
+    filter or sort starts at the first page, and a page past the end moves to
+    the last one. The previous page stays visible, dimmed, while the next one
+    loads.
+- Infinite lists bound their cost as they grow. Each card cell uses
+  `content-visibility: auto`, so the browser skips style, layout, and paint
+  for cards outside the viewport. A list that is left (or whose filter
+  changes) keeps only its first five pages in the cache, because an
+  invalidation refetches every cached page of an infinite query in turn.
 - A `401` from any API call invalidates the `auth` query, which returns the
   app to the sign-in screen.
 - Scan status is polled every 1.5 seconds only while a scan runs; when it

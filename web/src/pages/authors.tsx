@@ -1,13 +1,13 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { ListChecksIcon, MoreHorizontalIcon, SearchIcon, UsersIcon } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useSearchParams } from "react-router"
 
 import { DeleteDialog } from "@/components/delete-dialog"
 import { GroupCard } from "@/components/group-card"
 import { GroupMenuItems } from "@/components/group-actions"
-import { LoadMore } from "@/components/load-more"
+import { ListFooter } from "@/components/list-footer"
 import { LibrarySelect, useActiveLibrary } from "@/components/library-select"
 import { EmptyState, PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
@@ -17,12 +17,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CardGrid } from "@/components/work-card"
 import { WorkList } from "@/components/work-list"
 import { useDebounce } from "@/hooks/use-debounce"
+import { usePagedList } from "@/hooks/use-paged-list"
 import { useSelection } from "@/hooks/use-selection"
 import { api, type DeleteTarget } from "@/lib/api"
 import { GridSkeleton } from "@/pages/home"
 import { authorLink, seriesLink } from "@/lib/links"
-
-const PAGE = 60
+import { cn } from "@/lib/utils"
 
 export function AuthorsListPage() {
   const { t } = useTranslation()
@@ -31,21 +31,15 @@ export function AuthorsListPage() {
   const q = useDebounce(search)
   const [sort, setSort] = useState("name")
   const [deleting, setDeleting] = useState<DeleteTarget | null>(null)
-  const list = useInfiniteQuery({
-    queryKey: ["authors", library, q, sort],
-    queryFn: ({ pageParam }) => api.authors({ library, q, sort, offset: pageParam, limit: PAGE }),
-    initialPageParam: 0,
-    getNextPageParam: (last, all) => {
-      const loaded = all.reduce((n, p) => n + p.authors.length, 0)
-      return loaded < last.total ? loaded : undefined
-    },
-  })
-  const authors = useMemo(() => list.data?.pages.flatMap((p) => p.authors) ?? [], [list.data])
-  const total = list.data?.pages[0]?.total ?? 0
+  const list = usePagedList(["authors", library, q, sort], (offset, limit) =>
+    api.authors({ library, q, sort, offset, limit }).then((r) => ({ items: r.authors, total: r.total })),
+  )
+  const authors = list.items
+  const total = list.total ?? 0
 
   return (
     <>
-      <PageHeader title={t("authors.title")} description={list.data ? String(total) : undefined} />
+      <PageHeader title={t("authors.title")} description={list.total !== undefined ? String(total) : undefined} />
       <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center">
         <div className="relative flex-1">
           <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -72,8 +66,8 @@ export function AuthorsListPage() {
       </div>
 
       {list.isLoading && <GridSkeleton />}
-      {list.data && authors.length === 0 && <EmptyState icon={<UsersIcon />} title={t("authors.empty")} />}
-      <CardGrid className="pt-1.5">
+      {list.total === 0 && <EmptyState icon={<UsersIcon />} title={t("authors.empty")} />}
+      <CardGrid lazy={list.mode === "scroll"} className={cn("pt-1.5", list.isChangingPage && "opacity-60 transition-opacity")}>
         {authors.map((a) => (
           <GroupCard
             key={a.author}
@@ -99,7 +93,7 @@ export function AuthorsListPage() {
           />
         ))}
       </CardGrid>
-      <LoadMore query={list} />
+      <ListFooter list={list} />
       <DeleteDialog target={deleting} onClose={() => setDeleting(null)} />
     </>
   )
