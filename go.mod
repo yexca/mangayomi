@@ -5,7 +5,7 @@ go 1.27.4
 require (
 	golang.org/x/crypto v0.58.0
 	golang.org/x/image v0.47.0
-	modernc.org/sqlite v1.61.0
+	modernc.org/sqlite v1.61.1
 )
 
 require (
